@@ -1,0 +1,53 @@
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: mysql
+    depends_on:
+      - vault-agent
+    env_file:
+      - ./secrets/mysql.env
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./mysql-data:/var/lib/mysql
+    networks:
+      - app-network
+
+  vault-agent:
+    image: hashicorp/vault:latest
+    container_name: vault-agent
+    environment:
+      VAULT_ADDR: http://vault:8200
+    volumes:
+      - ./vault-agent-config:/vault/config
+      - ./secrets:/secrets
+    command: agent -config=/vault/config/agent.hcl
+    cap_add:
+      - IPC_LOCK
+    privileged: true
+    networks:
+      - app-network
+      - vault
+  phpmyadmin:
+    image: phpmyadmin:latest
+    container_name: phpmyadmin
+    environment:
+      PMA_HOST: mysql
+      MYSQL_ROOT_PASSWORD_FILE: /run/secrets/mysql_root_password
+      MYSQL_USER_FILE: /run/secrets/mysql_user
+      MYSQL_PASSWORD_FILE: /run/secrets/mysql_password
+    ports:
+      - "8000:80"
+    volumes:
+      - ./secrets:/run/secrets
+    networks:
+      - app-network
+
+volumes:
+  mysql-data:
+
+networks:
+  app-network:
+    driver: bridge
+  vault:
+    external: true 

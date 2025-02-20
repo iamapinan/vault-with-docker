@@ -1,0 +1,4 @@
+.env
+secrets/*
+mysql-data/*
+vault-agent-config/token
