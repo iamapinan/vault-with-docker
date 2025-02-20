@@ -31,3 +31,10 @@ docker-compose -f docker-compose.mysql.yml up -d
 docker-compose -f docker-compose.mysql.yml logs -f mysql
 ```
 
+You should see the MySQL credentials being injected into the container.
+
+## Cleanup
+
+```bash
+docker-compose -f docker-compose.mysql.yml down
+```
