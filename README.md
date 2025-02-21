@@ -76,3 +76,20 @@ You should see the MySQL credentials being injected into the container.
 ```bash
 docker-compose -f docker-compose.mysql.yml down
 ```
+
+Configure the Vault Agent to act as a proxy on port 8100
+
+The Vault Agent is configured to act as a proxy on port 8100, allowing other services to access Vault secrets without directly connecting to Vault. This enhances security by limiting the exposure of Vault's credentials and simplifying the process of managing secrets across the system.
+
+To utilize this proxy, services can connect to `http://localhost:8100` instead of directly accessing Vault. The Vault Agent will handle the authentication and retrieval of secrets on behalf of the services, ensuring a secure and efficient way to manage sensitive data.
+
+This setup is particularly useful in scenarios where multiple services require access to Vault secrets, as it eliminates the need for each service to maintain its own connection to Vault.
+
+
+## References
+
+- [Vault Docker](https://hub.docker.com/r/hashicorp/vault)
+
+## License
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
