@@ -1,9 +1,8 @@
-# Example of using Vault to store secrets and inject them into a container
+# Example of using Vault with Docker
 
 ## Prerequisites
 
 - Docker
-- Vault
 
 ## Setup
 
@@ -13,6 +12,7 @@
 docker-compose up -d
 ```
 
+Now you can access the Vault UI at http://localhost:8200 and login with the token `root-token`. In this tutorial, we will use the Vault CLI to create a secret.
 
 2. Access the Vault container shell
 
