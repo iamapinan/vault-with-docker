@@ -5,7 +5,6 @@
 - Docker
 
 ## Setup
-
 1. Start Vault
 
 ```bash
@@ -25,6 +24,9 @@ docker exec -it vault sh
 # Set the Vault address and token
 export VAULT_ADDR='http://localhost:8200'
 export VAULT_TOKEN='root-token'
+
+# Enable the kv secrets engine
+vault secrets enable -version=1 kv
 
 # Create a secret
 vault kv put kv/mysql MYSQL_DATABASE=testdb MYSQL_USER=testuser MYSQL_PASSWORD=testpassword MYSQL_ROOT_PASSWORD=rootpassword
@@ -46,24 +48,49 @@ EOF
 vault token create -policy="mysql-policy"
 ```
 
-You will get a token `client_id` in the output, copy it.
-
-5. Update the `token` and `.env` files with the new client_id
-
-In this step, you need to update the `token` and `.env` files with the new `client_id` outside the container.
-
-```bash
-echo "<client_id>" > ./vault-agent-config/token
-echo "VAULT_CLIENT_ID=<client_id>" > .env
+You will get a `token` in the output, copy it.
+```
+# Example output
+Key                  Value
+---                  -----
+token                hvs.CAESI-00000000-0000-0000-0000-000000000000
+token_accessor       xxxxxxxxxxxxxxxxxxx
+token_duration       768h
+token_renewable      true
+token_policies       ["default" "mysql-policy"]
+identity_policies    []
+policies             ["default" "mysql-policy"]
 ```
 
-6. Start the MySQL container and Vault agent
+After create token exit the container
+```bash
+exit
+```
+
+### Outside the container
+5. Update the `token` and `.env` files with the new token. In this step, you need to update the `token` and `.env` files with the new `token`.
+
+```bash
+echo "<token>" > ./vault-agent-config/token
+echo "VAULT_CLIENT_ID=<token>\nVAULT_ADDR=http://vault:8200" > .env
+```
+
+6. Start the Vault agent
+This will auto generate secrets files in `./secrets` directory.
+
+```bash
+docker-compose -f docker-compose.agent.yml up -d
+```
+
+7. Start the MySQL and PhpMyAdmin services
 
 ```bash
 docker-compose -f docker-compose.mysql.yml up -d
 ```
+Now you can access the PhpMyAdmin at [http://localhost:8000](http://localhost:8000) and the MySQL at [http://localhost:3306](http://localhost:3306) and login with the credentials in `./secrets/mysql.env`.
 
-7. Check the MySQL container logs
+
+8. Check the MySQL container logs
 
 ```bash
 docker-compose -f docker-compose.mysql.yml logs -f mysql
@@ -93,3 +120,7 @@ This setup is particularly useful in scenarios where multiple services require a
 ## License
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+
+Contributors:
+- [@iamapinan](https://github.com/iamapinan)
+
