@@ -1,1 +1,1 @@
-{{ with secret "kv/mysql" }}{{ .Data.data.MYSQL_ROOT_PASSWORD }}{{ end }}
+{{ with secret "kv/mysql" }}{{ .Data.MYSQL_ROOT_PASSWORD }}{{ end }}

@@ -12,8 +12,6 @@ services:
       - IPC_LOCK
     privileged: true
     command: server -dev
-    volumes:
-      - ./vault-data:/vault/file
     networks:
       - vault
 
